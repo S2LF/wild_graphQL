@@ -9,6 +9,9 @@ let schema = buildSchema(`
         courses(topic: String): [Course]
         coursesLike(searchInTitle: String!): [Course]  
     }
+    type Mutation {
+        addCourse(title: String!, author: String!, description: String, topic: String, url: String) : [Course]
+    }
     type Course {
         id: Int
         title: String
@@ -51,6 +54,20 @@ let getCoursesLike = function(args) {
     return coursesData.filter(course => course.title.includes(searchInTitle));
 }
 
+let addNewCourse = function({title, author, description, topic, url }) {
+    let id = coursesData.length+1
+    let newCourse = {
+        id: id,
+        title: title,
+        author: author,
+        description: description,
+        topic: topic,
+        url: url
+    }
+    coursesData.push(newCourse)
+    return coursesData;
+}
+
 let getCourse = function(args) {
     let id = args.id;
     return coursesData.filter(course => {
@@ -71,7 +88,8 @@ let getCourses = function(args){
 let root = {
     course: getCourse,
     courses: getCourses,
-    coursesLike: getCoursesLike
+    coursesLike: getCoursesLike,
+    addCourse: addNewCourse
 };
 
 // Create an express server and GraphQL endpoint
